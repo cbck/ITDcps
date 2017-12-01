@@ -64,9 +64,9 @@ while noInterupt == True:
 		
 		idx = 10
 		for idx in range(0,10):
+			green_LED.on()
 			client.publish(pub_msg,"TraffiState: GREEN - Seconds till change:")
 			client.publish(pub_msg,idx)				
-			green_LED.on()
 			sleep(1)
 			idx-1
 		
