@@ -15,44 +15,41 @@ import serial
 import time
 from collections import namedtuple
 
-# labor 50 pj6upw6g
-
 #functions to communicate with the Mbot platform
 
 #Stops the Mbot
-def mbot_motor_stop(my_mbot,serial):
-	mbot_message(my_mbot,serial,"set","motor","left","",[0,0])
-	mbot_message(my_mbot,serial,"set","motor","right","",[0,0])
+def mbot_motor_stop(serial):
+	mbot_message(serial,"set","motor","left","",[0,0])
+	mbot_message(serial,"set","motor","right","",[0,0])
 
 #Let the Mbot drive forward or backward #drives both Motors exactly synchron
-def mbot_drive_straight(my_mbot,serial,speed,direction):
+def mbot_drive_straight(serial,speed,direction):
 	#right motor
 	#if speed  0:
 	#	sp = 
 	
 	
 	#left motor
-	
 	#[0,255] => full forward
 	#[255,0] => full Backward
 	if direction == "forward":
-		mbot_message(my_mbot,serial,"set","motor","left","",[255-speed, 255])
-		mbot_message(my_mbot,serial,"set","motor","right","",[speed, 0])
+		mbot_message(serial,"set","motor","left","",[255-speed, 255])
+		mbot_message(serial,"set","motor","right","",[speed, 0])
 		
 		
 	elif direction == "backward":
-		mbot_message(my_mbot,serial,"set","motor","left","",[speed,0])
-		mbot_message(my_mbot,serial,"set","motor","right","",[255-speed,255])
+		mbot_message(serial,"set","motor","left","",[speed,0])
+		mbot_message(serial,"set","motor","right","",[255-speed,255])
 
 #Drives only the left Motor forward or backward
-def left_Motor(my_mbot, serial, speed, direction):
+def left_Motor(serial, speed, direction):
 	#drives the left Motor
-	mbot_message(my_mbot,serial,"set","motor","left","",[255, 30])
+	mbot_message(serial,"set","motor","left","",[255, 30])
 
 #Drives only the right Motor forward or backward
-def right_motor(my_mbot, serial, speed, direction):
+def right_motor(serial, speed, direction):
 	#drives the right Motor
-	mbot_message(my_mbot,serial,"set","motor","right","",[255, 30])
+	mbot_message(serial,"set","motor","right","",[255, 30])
 	
 """
 #Triggers the Mbot to send the Motor Encoder Data, recive it and return it
@@ -60,7 +57,7 @@ def get_encoder_data (mbot, serial):
 	#trigger the Mbot to send the Encoder Data
 """
 #Build the message for the communication protokoll
-def mbot_message(mbot, serial, action, device, port, slot, data):
+def mbot_message(serial, action, device, port, slot, data):
 
 	#Get action instruction and set it to the Value of the protokoll
 	if action == "get":
@@ -126,9 +123,8 @@ def mbot_message(mbot, serial, action, device, port, slot, data):
 	msg[2] = len(msg)-3
 
 	#At this Point the message is ready to be send
-	print (msg)
+	#print (msg)
 	serial.write(msg)
-
 
 #Global Variables
 wheel_diameter_cm = 10
@@ -140,61 +136,15 @@ acceleration = 1					#default Acceleration
 mode = 0							#Mode 0 => 0 Full Reverse; 128 Stop Motor; 255 = Full Forward
 speedregulation = 1					#1 = on ; 0 = off
 
-# This is the communication_protokoll for the MBOT
-mbot = namedtuple("mbot", "distance_wheel_turn "\
-					"encoder_tics_per_cm "\
-					"encoder_counts_per_turn "\
-					"wheel_diameter "\
-					"Mbot_INIT "\
-					"Mbot_length "\
-					"Mbot_idx "\
-					"Mbot_action "\
-					"Mbot_device "\
-					"Mbot_port "\
-					"Mbot_slot "\
-					"Mbot_data ")
-			
-# .... For testing reasons on the Mac disable the Serial connection and set port to 1
-port = 1
-
 #																								INIT							length			idx				action			device			port				slot						data
-my_mbot =mbot(wheel_distance, tics_per_cm, encoder_counts_per_turn, wheel_diameter_cm, [int("FF", 16), int("55", 16)],[int("06", 16)],[int("00", 16)],[int("02", 16)],[int("0A", 16)],[int("09", 16)],[int("FF",16), int("FF", 16)],[int("00", 16)])
+#my_mbot =mbot(wheel_distance, tics_per_cm, encoder_counts_per_turn, wheel_diameter_cm, [int("FF", 16), int("55", 16)],[int("06", 16)],[int("00", 16)],[int("02", 16)],[int("0A", 16)],[int("09", 16)],[int("FF",16), int("FF", 16)],[int("00", 16)])
 
 #initialise the Serial PL011 Serial 
 serial = serial.Serial("/dev/ttyAMA0", baudrate=115200, timeout=3.0)
-"""
-mbot_message(my_mbot,serial,"get","encoder","left","","")
-read_data = serial.read(8)
-print read_data
-"""
+
 #init_robot(my_robot, serial, acceleration, mode, speedregulation)
 
 """
-speed = 255
-mbot_drive_straight(my_mbot,speed,"forward")
-time.sleep(2)
-speed = 128
-mbot_drive_straight(my_mbot,serial,speed,"forward")
-time.sleep(2)
-speed = 60
-mbot_drive_straight(my_mbot,serial,speed,"forward")
-time.sleep(2)
-speed = 0
-mbot_drive_straight(my_mbot,serial,speed,"forward")
-time.sleep(2)
-speed = 60
-mbot_drive_straight(my_mbot,serial,speed,"backward")
-"""
-
-"""
-for x in range (0,100):
-	#mbot_message(my_mbot,serial,"set","motor","right","",[x,0])
-	mbot_drive_straight(my_mbot,serial,x,"forward")
-	time.sleep(0.001)
-time.sleep(1)
-mbot_motor_stop(my_mbot, serial)
-"""
-
 #Testmessage
 print "jetzt kommt der Ultraschalltest"
 mbot_message(my_mbot, serial, "get", "ultrasonic", "",3, "")
@@ -213,7 +163,40 @@ print read_data
 
 #Attention, The Arm has no Endstops
 #mbot_message(my_mbot,serial,"set","motor","arm","",[255,0])
+"""
+"""
+mbot_message(my_mbot,serial,"get","encoder","left","","")
+read_data = serial.read(8)
+print read_data
+"""
 
+"""
+speed = 255
+mbot_drive_straight(my_mbot,serial,speed,"forward")
+time.sleep(2)
+speed = 128
+mbot_drive_straight(my_mbot,serial,speed,"forward")
+time.sleep(2)
+speed = 60
+mbot_drive_straight(my_mbot,serial,speed,"forward")
+time.sleep(2)
+speed = 0
+mbot_drive_straight(my_mbot,serial,speed,"forward")
+time.sleep(2)
+speed = 60
+mbot_drive_straight(my_mbot,serial,speed,"backward")
+
+mbot_motor_stop(my_mbot,serial)
+"""
+
+"""
+for x in range (0,255):
+	#mbot_message(my_mbot,serial,"set","motor","right","",[x,0])
+	mbot_drive_straight(my_mbot,serial,x,"forward")
+	time.sleep(0.01)
+time.sleep(3)
+mbot_motor_stop(my_mbot, serial)
+"""
 
 """
 msg = [int("FF", 16)]
