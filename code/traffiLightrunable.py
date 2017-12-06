@@ -10,6 +10,8 @@
 from gpiozero import LED
 from time import sleep
 import paho.mqtt.client as mqtt
+import datetime
+#standardlatency 120...200ms for Online MQTT network
 
 red_LED = LED(25)
 yellow_LED = LED(24)
@@ -23,11 +25,21 @@ timeYellow = 3
  
 Broker = "172.31.12.122"
 sub_msg = "car/message"
-pub_msg = "traffiLight/state"
+pub_msg = "traffiLight/state" #state is exchange point for all paramters []
 TTNS = "traffiLight/timeTillNextState"
 DONS = "traffiLight/durationOfNextState"
 AS = "traffiLight/actualState"
 NS = "traffiLight/nextState"
+
+stateMessage = []
+interuptvariable = 0
+#start to fill with t0 and
+stateMessage[1] = t0 #t0 soll timestamp werden
+stateMessage[2] = (t0 + timeRed)
+stateMessage[3] = (t0 + timeRed + timeRedYellow) 
+staeMessage[4] = (t0 + timeRed + timeRedYellow + timeGreen)
+stateMessage[5] = (t0 + timeRed + timeRedYellow + timeGreen + timeYellow)
+stateMessage[6] = interuptvariable
 
 
 # when connecting to broker print result code
