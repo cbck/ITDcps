@@ -5,10 +5,10 @@ import time
 
 '''
 def publish_1(client,topic):
-    message="on"
-    print("publish data")
-    client.publish(topic,message)
-    publish_1(client,topic)
+message="on"
+print("publish data")
+client.publish(topic,message)
+publish_1(client,topic)
 '''
 
 Broker="172.31.12.122"
@@ -22,21 +22,49 @@ iRedYellow = "traffiLight/iRedYellow"   #interval for Red-Yellow in Seconds
 iGreen = "traffiLight/iGreen"           #interval for Green in Seconds
 iYellow = "traffiLight/iYellow"         #interval for Yellow in Seconds
 interupt = "traffiLight/interupt"       #interupt if Bus/RTW comes and other
+timeRed = 0.0
+timeRedYellow = 0.0
+timeGreen = 0.0
+timeYellow = 0.0
+t0 = 0.0
 
 servertime = ''
+ts = 0.0
 
 def on_connect(client, userdata, flags, rc):
-    print("Connected with result code "+str(rc))
-    client.subscribe(time)
-    client.subscribe(iRed)
-    client.subscribe(iRedYellow)
-    client.subscribe(iGreen)
-    client.subscribe(iYellow)
-    client.subscirbe(TTNS)
-    client.subscribe(interupt)
+	print("Connected with result code "+str(rc))
+	client.subscribe(time)
+	client.subscribe(iRed)
+	client.subscribe(iRedYellow)
+	client.subscribe(iGreen)
+	client.subscribe(iYellow)
+	client.subscribe(TTNS)
+	client.subscribe(interupt)
 
 def on_message(client, userdata, msg):
-    print(msg.topic+" "+str(msg.payload))
+	t0 = time.time()
+	if msg.topic == time:
+		servertime = (msg.payload)
+	if msg.topic == iRed:
+		timeRed = msg.payload
+	if msg.topic == iRedYellow:
+		timeRedYellow = msg.payload
+	if msg.topic == iYellow:
+		timeYellow = msg.payload
+	if msg.topic == iGreen:
+		timeGreen = msg.payload
+	if msg.topic == interupt:
+		serverInterupt = msg.payload
+	
+#def timeNextGreenDeadline():
+	
+
+def getPeriodTime():
+	periodtime = timeRed + timeRedYellow + timeGreen + timeYellow
+	return periodtime
+
+
+
 
 client = mqtt.Client()
 client.on_connect = on_connect
@@ -44,22 +72,5 @@ client.on_message = on_message
 
 client.connect(Broker, 1883, 60) 
 #timeSync  
-    ts = time.time(ts)
-    localtime = datetime.datetime.fromtimestamp(ts).strftime('%H:%M:%S:%f')
-    if msg.topic == time
-        servertime = msg.payload
-        if servertime != localtime
-        localtime = servertime
 
-    if msg.topic == iRed
-        timeRed = msg.payload
-    if msg.topic == iRedYellow
-        timeRedYellow = msg.payload
-    if msg.topic == iYellow
-        timeYellow = msg.payload
-    if msg.topic == iGreen
-        timeGreen = msg.payload
-    if msg.topic == interupt
-        serverInterupt = msg.payload
-    
 client.loop_forever()

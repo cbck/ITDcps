@@ -36,17 +36,19 @@ iRedYellow = "traffiLight/iRedYellow"   #interval for Red-Yellow in Seconds
 iGreen = "traffiLight/iGreen"           #interval for Green in Seconds
 iYellow = "traffiLight/iYellow"         #interval for Yellow in Seconds
 interupt = "traffiLight/interupt"       #interupt if Bus/RTW comes and other
-t0 = ' '
+t0 = ""
 
-stateMessage = []
-interuptvariable = 0
+
+
+#stateMessage = []
+#interuptvariable = 0
 #start to fill with t0 and
-stateMessage[1] = t0 #t0 soll timestamp werden
-stateMessage[2] = (t0 + timeRed)
-stateMessage[3] = (t0 + timeRed + timeRedYellow) 
-staeMessage[4] = (t0 + timeRed + timeRedYellow + timeGreen)
-stateMessage[5] = (t0 + timeRed + timeRedYellow + timeGreen + timeYellow)
-stateMessage[6] = interuptvariable
+#stateMessage[1] = t0 #t0 soll timestamp werden
+#stateMessage[2] = (t0 + timeRed)
+#stateMessage[3] = (t0 + timeRed + timeRedYellow) 
+#staeMessage[4] = (t0 + timeRed + timeRedYellow + timeGreen)
+#stateMessage[5] = (t0 + timeRed + timeRedYellow + timeGreen + timeYellow)
+#stateMessage[6] = interuptvariable
 
 
 # when connecting to broker print result code
@@ -70,46 +72,50 @@ client.on_message = on_message
 client.connect(Broker, 1883, 60)
 
 while noInterupt == True:
-    ts = time.time(ts)
+	ts = time.time()
 	t0 = datetime.datetime.fromtimestamp(ts).strftime('%H:%M:%S:%f')
 	client.publish(timestamp, t0)
 	client.publish(iRed, timeRed)
 	client.publish(iRedYellow, timeRedYellow)
 	client.publish(iGreen, timeGreen)
 	client.publish(iYellow, timeYellow)
-
-	for idx in range(timeRed,0)
+	
+	idx =timeRed
+	for idx in range(timeRed,0):
 		red_LED.on()
 		print("Red for " + idx + "s")
 		client.publish(TTNS,idx)
-		sleep(1)
-		idx = idx-1
-	
-	for idx in range(timeRedYellow,0)
+		sleep(0.1)
+		idx = idx-0.1
+
+	idx =timeRedYellow	
+	for idx in range(timeRedYellow,0):
 		yellow_LED.on()
 		print("Red-Yellow for " + idx + "s")
 		client.publish(TTNS,idx)
-		sleep(1)
-		idx = idx-1
+		sleep(0.1)
+		idx = idx-0.1
 	
 	red_LED.off()
 	yellow_LED.off()
 	
-	for idx in range(timeGreen,0)
+	idx =timeGreen
+	for idx in range(timeGreen,0):
 		green_LED.on()
 		print("Green for " + idx + "s")
 		client.publish(TTNS,idx)
-		sleep(1)
-		idx = idx-1
+		sleep(0.1)
+		idx = idx-0.1
 
 	green_LED.off()
 
-	for idx in range(timeYellow,0)
+	idx =timeYellow
+	for idx in range(timeYellow,0):
 		yellow_LED.on()
 		print("Green for " + idx + "s")
 		client.publish(TTNS,idx)
-		sleep(1)
-		idx = idx-1
+		sleep(0.1)
+		idx = idx-0.1
 
 	yellow_LED.off		
 	
