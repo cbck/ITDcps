@@ -36,7 +36,7 @@ iRedYellow = "traffiLight/iRedYellow"   #interval for Red-Yellow in Seconds
 iGreen = "traffiLight/iGreen"           #interval for Green in Seconds
 iYellow = "traffiLight/iYellow"         #interval for Yellow in Seconds
 interupt = "traffiLight/interupt"       #interupt if Bus/RTW comes and other
-TTNS = "timeTillNextState"
+TTNS = "traffiLight/timeTillNextState"
 t0 = ""
 
 
@@ -86,6 +86,9 @@ while noInterupt == True:
 	client.publish(iYellow, timeYellow)
 	
 	#First Stage: Red 
+	yellow_LED.off()
+	red_LED.off()
+	green_LED.off()
 	idx = (timeRed*10)
 	n = (timeRed*10)
 	ttns = float(timeRed)
