@@ -23,6 +23,8 @@ iRedYellow = "traffiLight/iRedYellow"   #interval for Red-Yellow in Seconds
 iGreen = "traffiLight/iGreen"           #interval for Green in Seconds
 iYellow = "traffiLight/iYellow"         #interval for Yellow in Seconds
 interupt = "traffiLight/interupt"       #interupt if Bus/RTW comes and other
+CS = "traffiLight/currentState"
+currentState = ""
 timeRed = 0.0
 timeRedYellow = 0.0
 timeGreen = 0.0
@@ -69,13 +71,32 @@ def on_message(client, userdata, msg):
 		
 	if msg.topic == TTNS:
 		ttns = msg.payload
-		print("timeTillNextState" + ttns)
-	
-#def timeNextGreenDeadline():
-	
+		print("timeTillNextState " + ttns +"[seconds]")
+		
+	if msg.topic == CS:
+		currentState = msg.payload
+		print("current State " + currentState)
+
 def getPeriodTime():
 	periodtime = timeRed + timeRedYellow + timeGreen + timeYellow
 	return periodtime
+	
+def timeNextGreenDeadline():
+	if 	currentState == "Green":
+		return 0 
+
+	if currentState == "Red":
+		return ((timeRed - ttns) + timeRedYellow)
+		
+	if currentState == "Yellow":
+		return ((timeYellow -ttns) + timeRed + timeRedYellow)
+		
+	if currentState == "Red-Yellow":
+		return ttns
+	else:
+		return "Time till next Green Deadline can not be calculated"
+
+		
 
 
 client = mqtt.Client()
@@ -85,14 +106,9 @@ client.on_message = on_message
 client.connect(Broker, 1883, 60) 
 
 #timeSync  
-'''
+
 while noInterupt == True:
-	print(timeRed)
-	print("Test1")
-	print(servertime)
-	print("Test2")
-	print(client.subscribe(iRed))
-	#noInterupt = False
-	sleep(0.1)
-	'''
-client.loop_forever()
+	print(timeNextGreenDeadline())
+	client.loop_forever()
+
+

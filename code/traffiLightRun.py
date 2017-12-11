@@ -37,19 +37,10 @@ iGreen = "traffiLight/iGreen"           #interval for Green in Seconds
 iYellow = "traffiLight/iYellow"         #interval for Yellow in Seconds
 interupt = "traffiLight/interupt"       #interupt if Bus/RTW comes and other
 TTNS = "traffiLight/timeTillNextState"
+CS = "traffiLight/currentState"
 t0 = ""
 
 
-
-#stateMessage = []
-#interuptvariable = 0
-#start to fill with t0 and
-#stateMessage[1] = t0 #t0 soll timestamp werden
-#stateMessage[2] = (t0 + timeRed)
-#stateMessage[3] = (t0 + timeRed + timeRedYellow) 
-#staeMessage[4] = (t0 + timeRed + timeRedYellow + timeGreen)
-#stateMessage[5] = (t0 + timeRed + timeRedYellow + timeGreen + timeYellow)
-#stateMessage[6] = interuptvariable
 
 
 # when connecting to broker print result code
@@ -92,6 +83,7 @@ while noInterupt == True:
 	idx = (timeRed*10)
 	n = (timeRed*10)
 	ttns = float(timeRed)
+	client.publish(CS,"Red")
 	for idx in range(0,n):
 		red_LED.on()
 		sleep(0.1)
@@ -113,6 +105,7 @@ while noInterupt == True:
 	idx = (timeRedYellow*10)	
 	n = timeRedYellow*10
 	ttns = float(timeRedYellow)
+	client.publish(CS,"Red-Yellow")
 	for idx in range(0,n):
 		ttns = ttns-0.1
 		yellow_LED.on()
@@ -137,6 +130,7 @@ while noInterupt == True:
 	idx =(timeGreen*10)
 	n = timeGreen*10
 	ttns = float(timeGreen)
+	client.publish(CS,"Green")
 	for idx in range(0,n):
 		ttns = ttns-0.1
 		green_LED.on()
@@ -159,6 +153,7 @@ while noInterupt == True:
 	idx = (timeYellow*10)
 	n = timeYellow*10
 	ttns = float(timeYellow)
+	client.publish(CS,"Yellow")
 	for idx in range(0,n):
 		ttns = ttns-0.1
 		yellow_LED.on()
