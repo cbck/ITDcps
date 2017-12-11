@@ -20,7 +20,7 @@ green_LED = LED(23)
 noInterupt = True
 
 #time in Seconds for different States
-timeRed = 10
+timeRed = 10 #s
 timeGreen = 10
 timeRedYellow = 1
 timeYellow = 3
@@ -36,6 +36,7 @@ iRedYellow = "traffiLight/iRedYellow"   #interval for Red-Yellow in Seconds
 iGreen = "traffiLight/iGreen"           #interval for Green in Seconds
 iYellow = "traffiLight/iYellow"         #interval for Yellow in Seconds
 interupt = "traffiLight/interupt"       #interupt if Bus/RTW comes and other
+TTNS = "timeTillNextState"
 t0 = ""
 
 
@@ -72,50 +73,96 @@ client.on_message = on_message
 client.connect(Broker, 1883, 60)
 
 while noInterupt == True:
+	
+	#Timestamp
 	ts = time.time()
 	t0 = datetime.datetime.fromtimestamp(ts).strftime('%H:%M:%S:%f')
+	print(ts)
+	print(t0)
 	client.publish(timestamp, t0)
 	client.publish(iRed, timeRed)
 	client.publish(iRedYellow, timeRedYellow)
 	client.publish(iGreen, timeGreen)
 	client.publish(iYellow, timeYellow)
 	
-	idx =timeRed
-	for idx in range(timeRed,0):
+	#First Stage: Red 
+	idx = (timeRed*10)
+	n = (timeRed*10)
+	ttns = float(timeRed)
+	for idx in range(0,n):
 		red_LED.on()
-		print("Red for " + idx + "s")
-		client.publish(TTNS,idx)
 		sleep(0.1)
-		idx = idx-0.1
+		ttns = ttns-0.1		
+		idx = idx-1
+		print("Red for %f")  % ttns
+		client.publish(TTNS,ttns)
+		
+	#TimeStamp2
+		
+	ts = time.time()
+	t0 = datetime.datetime.fromtimestamp(ts).strftime('%H:%M:%S:%f')
+	print(ts)
+	print(t0)
+	client.publish(timestamp, t0)
+	
+	#Second Stage: Red Yellow
 
-	idx =timeRedYellow	
-	for idx in range(timeRedYellow,0):
+	idx = (timeRedYellow*10)	
+	n = timeRedYellow*10
+	ttns = float(timeRedYellow)
+	for idx in range(0,n):
+		ttns = ttns-0.1
 		yellow_LED.on()
-		print("Red-Yellow for " + idx + "s")
-		client.publish(TTNS,idx)
+		print("Red-Yellow for %f") %ttns
+		client.publish(TTNS,ttns)
 		sleep(0.1)
-		idx = idx-0.1
+		idx = idx-1
 	
 	red_LED.off()
 	yellow_LED.off()
 	
-	idx =timeGreen
-	for idx in range(timeGreen,0):
+	#timeStamp3
+	
+	ts = time.time()
+	t0 = datetime.datetime.fromtimestamp(ts).strftime('%H:%M:%S:%f')
+	print(ts)
+	print(t0)
+	client.publish(timestamp, t0)
+	
+	#Stage 3: Green
+	
+	idx =(timeGreen*10)
+	n = timeGreen*10
+	ttns = float(timeGreen)
+	for idx in range(0,n):
+		ttns = ttns-0.1
 		green_LED.on()
-		print("Green for " + idx + "s")
-		client.publish(TTNS,idx)
+		print("Green for %f") %ttns
+		client.publish(TTNS,ttns)
 		sleep(0.1)
-		idx = idx-0.1
+		idx = idx-1
 
 	green_LED.off()
+	
+	#Timestamp 4
+	
+	ts = time.time()
+	t0 = datetime.datetime.fromtimestamp(ts).strftime('%H:%M:%S:%f')
+	print(ts)
+	print(t0)
+	client.publish(timestamp, t0)
 
-	idx =timeYellow
-	for idx in range(timeYellow,0):
+	#Stage4 Yellow
+	idx = (timeYellow*10)
+	n = timeYellow*10
+	ttns = float(timeYellow)
+	for idx in range(0,n):
+		ttns = ttns-0.1
 		yellow_LED.on()
-		print("Green for " + idx + "s")
-		client.publish(TTNS,idx)
+		print("Green for %f") %ttns
+		client.publish(TTNS,ttns)
 		sleep(0.1)
-		idx = idx-0.1
+		idx = idx-1
 
 	yellow_LED.off		
 	
