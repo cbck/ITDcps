@@ -48,7 +48,7 @@ def on_connect(client, userdata, flags, rc):
 
 def on_message(client, userdata, msg):
 	t0 = time.time()
-	io = open("/Users/Chris/Documents/GitHub/ITD/code/io.txt","wr")
+	io = open("io_file.txt","wb")
 	if msg.topic == timestamp:
 		servertime = str(msg.payload)
 		print("UTC Servertime:" +servertime)

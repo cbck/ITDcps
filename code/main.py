@@ -3,48 +3,69 @@
 #
 #  main.py
 #  
-#  Copyright 2017  <pi@raspberrypi>
-#  
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#  
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#  
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-#  MA 02110-1301, USA.
-#  
+#  @authors Christopher.Beck@stud.hshl.de
+#  @authors Johannes.Schaefer@stud.hshl.de
 #  
 
 import MbotMQTT.py
 import carSubscriber.py
 import Queue	
-from carSubscriber import 
 
 #distance = 50.0
+#workArray contents [Red,RedYellow,Yellow,Green,ttns,currentState]
 
-def main():
-	if(timeNextGreenDeadline) == "error":
+def timeNextGreenDeadline():
+	#Function returns a float with time in seconds till the next Green-Phase ends
+	if 	workArray[5] == "Green":
+		return 0 
+
+	if workArray[5] == "Red":
+		#return ((timeRed - ttns) + timeRedYellow)
+		return (workArray[0] - workArray[4] +workArray[1])
+
+	if workArray[5] == "Yellow":
+		#return ((timeYellow -ttns) + timeRed + timeRedYellow)
+		return workArray[2] - workArray[4] + workArray[0] + workArray[1])
+		
+	if workArray[5] == "Red-Yellow":
+		#return ttns
+		return workArray[4]
+	else:
+		return "Time till next Green Deadline can not be calculated"
+
+def driveAlgorithm():
+	#Written by Johannes
+	#Distance wird fix angenommen
+	@TODO
+	#Geschwindigkeitsalgorithmus mit korrekten Werten fehlt noch
+
+	if(timeNextGreenDeadline()) == "Time till next Green Deadline can not be calculated:
+		#Security Break if no correct Deadline can be calculated
+		mbot_motor_stop
 		break
-			
-    elif(timeNextGreenDeadline) == 0:
+		
+    elif(timeNextGreenDeadline()) == 0:
 		mbot_drive_straight(my_mbot,serial,255,"forward")
 	
-	elif(timeNextGreenDeadline) < distance/mbot_speed:
+	elif(timeNextGreenDeadline()) < distance/mbot_speed:
 		mbot_motor_stop
 	
-	elif(timeNextGreenDeadline) > distance/mbot_speed:
+	elif(timeNextGreenDeadline()) > distance/mbot_speed:
 		mbot_speed = distance/timeNextGreenDeadline
 		mbot_drive_straight(my_mbot,serial,mbot_speed,"forward")
-	
-	
-	client.loop_forever()
+
+def main():
+	#start carSubscriber.py as shell process here!
+	#file must be in same working director
+	os.system('python carSubscriber.py')
+
+	#while noInterupt in Array here einsetzen?
+	io = open("io_file.txt","wb")
+	workArray = io.read([count])
+	io.close()
+
+	driveAlgorithm()
+
 
 if __name__ == '__main__':
 	main()

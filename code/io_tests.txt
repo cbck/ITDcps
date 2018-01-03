@@ -1,0 +1,1 @@
+timeRed,timeRedYellow,timeYellow,timeGreen,ttns,currentState
