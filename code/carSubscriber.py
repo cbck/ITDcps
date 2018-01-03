@@ -3,6 +3,7 @@ import paho.mqtt.client as mqtt
 import datetime
 import time
 from time import sleep
+import Queue
 
 '''
 def publish_1(client,topic):
@@ -53,6 +54,7 @@ def on_message(client, userdata, msg):
 	if msg.topic == iRed:
 		timeRed = msg.payload
 		print("Red: " + timeRed)
+		q.put("Queue Inhalt")
 		
 	if msg.topic == iRedYellow:
 		timeRedYellow = msg.payload
@@ -104,6 +106,7 @@ client.on_connect = on_connect
 client.on_message = on_message
 
 client.connect(Broker, 1883, 60) 
+q = Queue.Queue
 
 #timeSync  
 
