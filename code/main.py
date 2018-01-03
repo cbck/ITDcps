@@ -24,6 +24,8 @@
 
 import MbotMQTT.py
 import carSubscriber.py
+import Queue	
+from carSubscriber import 
 
 #distance = 50.0
 
@@ -32,14 +34,14 @@ def main():
 		break
 			
     elif(timeNextGreenDeadline) == 0:
-		mbot_drive_straight(my_mbot,serial,255,"foreward")
+		mbot_drive_straight(my_mbot,serial,255,"forward")
 	
 	elif(timeNextGreenDeadline) < distance/mbot_speed:
 		mbot_motor_stop
 	
 	elif(timeNextGreenDeadline) > distance/mbot_speed:
 		mbot_speed = distance/timeNextGreenDeadline
-		mbot_drive_straight(my_mbot,serial,mbot_speed,"foreward")
+		mbot_drive_straight(my_mbot,serial,mbot_speed,"forward")
 	
 	
 	client.loop_forever()

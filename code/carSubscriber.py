@@ -5,6 +5,7 @@ import time
 from time import sleep
 import Queue
 
+
 '''
 def publish_1(client,topic):
 message="on"
@@ -47,6 +48,7 @@ def on_connect(client, userdata, flags, rc):
 
 def on_message(client, userdata, msg):
 	t0 = time.time()
+	io = open("/Users/Chris/Documents/GitHub/ITD/code/io.txt","wr")
 	if msg.topic == timestamp:
 		servertime = str(msg.payload)
 		print("UTC Servertime:" +servertime)
@@ -54,18 +56,22 @@ def on_message(client, userdata, msg):
 	if msg.topic == iRed:
 		timeRed = msg.payload
 		print("Red: " + timeRed)
-		q.put("Queue Inhalt")
+		io.write([timeRed,timeRedYellow,timeYellow,timeGreen,ttns,currentState])
 		
 	if msg.topic == iRedYellow:
 		timeRedYellow = msg.payload
 		print("RedYellow: " + timeRedYellow)
+		io.write([timeRed,timeRedYellow,timeYellow,timeGreen,ttns,currentState])
 		
 	if msg.topic == iYellow:
 		timeYellow = msg.payload
 		print("Yellow: " + timeYellow)
+		io.write([timeRed,timeRedYellow,timeYellow,timeGreen,ttns,currentState])
+
 	if msg.topic == iGreen:
 		timeGreen = msg.payload
 		print("Green: " + timeGreen)
+		io.write([timeRed,timeRedYellow,timeYellow,timeGreen,ttns,currentState])
 		
 	if msg.topic == interupt:
 		serverInterupt = msg.payload
@@ -74,10 +80,13 @@ def on_message(client, userdata, msg):
 	if msg.topic == TTNS:
 		ttns = msg.payload
 		print("timeTillNextState " + ttns +"[seconds]")
+		io.write([timeRed,timeRedYellow,timeYellow,timeGreen,ttns,currentState])
 		
 	if msg.topic == CS:
 		currentState = msg.payload
 		print("current State " + currentState)
+		io.write([timeRed,timeRedYellow,timeYellow,timeGreen,ttns,currentState])
+	io.close()
 
 def getPeriodTime():
 	periodtime = timeRed + timeRedYellow + timeGreen + timeYellow
@@ -98,20 +107,15 @@ def timeNextGreenDeadline():
 	else:
 		return "Time till next Green Deadline can not be calculated"
 
-		
-
-
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
 
 client.connect(Broker, 1883, 60) 
-q = Queue.Queue
 
 #timeSync  
-
 while noInterupt == True:
-	print(timeNextGreenDeadline())
+	#print(timeNextGreenDeadline())
 	client.loop_forever()
 
 
