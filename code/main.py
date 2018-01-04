@@ -11,6 +11,8 @@ from MbotMQTT import mbot_drive_straight
 from MbotMQTT import mbot_motor_stop
 import carSubscriber
 import Queue	
+import thread
+workArray = []
 
 #distance = 50.0
 #workArray contents [Red,RedYellow,Yellow,Green,ttns,currentState]
@@ -44,21 +46,32 @@ def driveAlgorithm():
 	#Distance wird fix angenommen
 	#Geschwindigkeitsalgorithmus mit korrekten Werten fehlt noch
 	mbot_drive_straight(my_mbot,serial,255,"forward");
-
-
-def main():
-	#start carSubscriber.py as shell process here!
-	#file must be in same working director
-	os.system('python carSubscriber.py')
-
-	#while noInterupt in Array here einsetzen?
+	
+def readIO():
 	io = open("io_file.txt","wb")
 	workArray = io.read([count])
 	io.close()
 
 	print("------------------------------------------------------------------------------------------------")
 	print(workArray[5])
-	driveAlgorithm()
+	print("------------------------------------------------------------------------------------------------")
+
+
+def main():
+	
+	q = Queue.Queue()
+	#start carSubscriber.py as shell process here!
+	#file must be in same working director
+	try:
+		thread.start_new_thread(os.system, ('python carSubsriber.py'))
+		#thread.start_new_thread(driveAlgorithm, ())
+		thread.start_new_thread(readIO,'')
+	except:
+		print "Error: unable to start thread"
+
+	while 1:
+		pass
+
 
 
 if __name__ == '__main__':
