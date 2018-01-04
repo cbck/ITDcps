@@ -32,6 +32,7 @@ timeRedYellow = 0.0
 timeGreen = 0.0
 timeYellow = 0.0
 t0 = 0.0
+floats=[ 0.,0.,0.,0.,0.,str(currentState)]
 
 servertime = ''
 ts = 0.0
@@ -45,10 +46,11 @@ def on_connect(client, userdata, flags, rc):
 	client.subscribe(iYellow)
 	client.subscribe(TTNS)
 	client.subscribe(interupt)
+	client.subscribe(CS)
 
 def on_message(client, userdata, msg):
 	t0 = time.time()
-	io = open("io_file.txt","wb")
+
 	if msg.topic == timestamp:
 		servertime = str(msg.payload)
 		print("UTC Servertime:" +servertime)
@@ -56,22 +58,34 @@ def on_message(client, userdata, msg):
 	if msg.topic == iRed:
 		timeRed = msg.payload
 		print("Red: " + timeRed)
-		io.write([timeRed,timeRedYellow,timeYellow,timeGreen,ttns,currentState])
+		floats[0] = timeRed
+		io = open("io_file.txt","wb")
+		io.write(str(floats))
+		io.close()
 		
 	if msg.topic == iRedYellow:
 		timeRedYellow = msg.payload
 		print("RedYellow: " + timeRedYellow)
-		io.write([timeRed,timeRedYellow,timeYellow,timeGreen,ttns,currentState])
+		floats[1] = timeRedYellow
+		io = open("io_file.txt","wb")
+		io.write(str(floats))
+		io.close()
 		
 	if msg.topic == iYellow:
 		timeYellow = msg.payload
 		print("Yellow: " + timeYellow)
-		io.write([timeRed,timeRedYellow,timeYellow,timeGreen,ttns,currentState])
+		floats[2] = timeYellow
+		io = open("io_file.txt","wb")
+		io.write(str(floats))
+		io.close()
 
 	if msg.topic == iGreen:
 		timeGreen = msg.payload
 		print("Green: " + timeGreen)
-		io.write([timeRed,timeRedYellow,timeYellow,timeGreen,ttns,currentState])
+		floats[3] = timeGreen
+		io = open("io_file.txt","wb")
+		io.write(str(floats))
+		io.close()
 		
 	if msg.topic == interupt:
 		serverInterupt = msg.payload
@@ -80,13 +94,20 @@ def on_message(client, userdata, msg):
 	if msg.topic == TTNS:
 		ttns = msg.payload
 		print("timeTillNextState " + ttns +"[seconds]")
-		io.write([timeRed,timeRedYellow,timeYellow,timeGreen,ttns,currentState])
+		floats[4] = ttns
+		io = open("io_file.txt","wb")
+		io.write(str(floats))
+		io.close()
 		
 	if msg.topic == CS:
 		currentState = msg.payload
-		print("current State " + currentState)
-		io.write([timeRed,timeRedYellow,timeYellow,timeGreen,ttns,currentState])
-	io.close()
+		print("currentState " + currentState)
+		floats[5] = currentState
+		io = open("io_file.txt","wb")
+		io.write(str(floats))
+		io.close()
+		
+	
 
 def getPeriodTime():
 	periodtime = timeRed + timeRedYellow + timeGreen + timeYellow
