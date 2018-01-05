@@ -7,15 +7,48 @@
 #  @authors Johannes.Schaefer@stud.hshl.de
 #  
 
-from MbotMQTT import mbot_drive_straight
-from MbotMQTT import mbot_motor_stop
-import carSubscriber
-import Queue	
-import thread
+#from MbotMQTT import mbot_drive_straight
+#from MbotMQTT import mbot_motor_stop
+#from carSubscriber import connectMQTT
+import Queue
+import array
+import pickle
+from thread import start_new_thread
+from carSubscriberLibrary import readIO
+from carSubscriberLibrary import connectMQTT
+from time import sleep
 workArray = []
-
+bufFloat=[]
+f = "io_file.txt"
 #distance = 50.0
 #workArray contents [Red,RedYellow,Yellow,Green,ttns,currentState]
+
+
+def main():
+	#os.system('python carSubscriber.py')
+	print "carSubscriber.py should start"
+	
+	
+	print "Main Started here"
+	q = Queue.Queue()
+	#start carSubscriber.py as shell process here!
+	#file must be in same working director
+	try:
+		print "Testausgabe 0"
+		#Im Moment carSubsriber selber aufrufen
+		#start_new_thread(connectMQTT,())
+
+		print "Testausgabe 1"
+		#thread.start_new_thread(driveAlgorithm, ())
+
+		print "Testausgabe 2"
+		start_new_thread(printIO,())
+		
+	except:
+		print "Error: unable to start thread"
+
+	while 1:
+		pass
 
 def timeNextGreenDeadline():
 	#Function returns a float with time in seconds till the next Green-Phase ends
@@ -45,51 +78,18 @@ def driveAlgorithm():
 	#Written by Johannes
 	#Distance wird fix angenommen
 	#Geschwindigkeitsalgorithmus mit korrekten Werten fehlt noch
-	mbot_drive_straight(my_mbot,serial,255,"forward");
+	print("Drive Algorithm started here")
+	#mbot_drive_straight(my_mbot,serial,255,"forward");
 	
-def readIO():
-	io = open("io_file.txt","wb")
-	workArray = io.read([count])
-	io.close()
-
-	print("------------------------------------------------------------------------------------------------")
-	print(workArray[5])
-	print("------------------------------------------------------------------------------------------------")
-
-
-def main():
-	
-	q = Queue.Queue()
-	#start carSubscriber.py as shell process here!
-	#file must be in same working director
-	try:
-		thread.start_new_thread(os.system, ('python carSubsriber.py'))
-		#thread.start_new_thread(driveAlgorithm, ())
-		thread.start_new_thread(readIO,'')
-	except:
-		print "Error: unable to start thread"
-
+def printIO():
 	while 1:
-		pass
+		io_data = readIO(f)
+		print io_data
+		sleep(0.01)
+	
 
 
 
 if __name__ == '__main__':
 	main()
 
-'''
-	if(timeNextGreenDeadline()) == "Time till next Green Deadline can not be calculated":
-		#Security Break if no correct Deadline can be calculated
-		mbot_motor_stop
-		break
-		
-    elif(timeNextGreenDeadline()) == 0:
-		mbot_drive_straight(my_mbot,serial,255,"forward")
-	
-	elif(timeNextGreenDeadline()) < distance/mbot_speed:
-		mbot_motor_stop
-	
-	elif(timeNextGreenDeadline()) > distance/mbot_speed:
-		mbot_speed = distance/timeNextGreenDeadline
-		mbot_drive_straight(my_mbot,serial,mbot_speed,"forward")
-'''

@@ -203,8 +203,8 @@ serial.flush()
 #mbot_message(my_mbot,serial,"get","encoder","left","","")
 read_data = serial.read(1)
 
-print "jetzt kommt read data"
-print read_data
+#print "jetzt kommt read data2"
+#print read_data
 
 #mbot_message(my_mbot,serial,"set","motor","left","",[128,0])
 

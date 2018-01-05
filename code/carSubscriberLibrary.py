@@ -32,7 +32,7 @@ timeRedYellow = 0.0
 timeGreen = 0.0
 timeYellow = 0.0
 t0 = 0.0
-floats= [0.,0.,0.,0.,0.,str(currentState)]
+floats= 0.,0.,0.,0.,0.,str(currentState)
 f = "io_file.txt"
 
 servertime = ''
@@ -56,12 +56,9 @@ def writeIO(data, outfile):
 	
 	
 def readIO(filename):
-	if filename.closed == True:
-		ifile = open(filename,"wb")
-		data = pickle.load(ifile)
-		ifile.close()
-	else:
-		#sleep(0.1)
+	ifile = open(filename)
+	data = pickle.load(ifile)
+	ifile.close()
 	return data
 
 def on_message(client, userdata, msg):
@@ -132,10 +129,13 @@ def timeNextGreenDeadline():
 	else:
 		return "Time till next Green Deadline can not be calculated"
 
-client = mqtt.Client()
-client.on_connect = on_connect
-client.on_message = on_message
-client.connect(Broker, 1883, 60) 
-#timeSync  
-while noInterupt == True:
-	client.loop_forever()
+def connectMQTT():
+	client = mqtt.Client()
+	client.on_connect = on_connect
+	client.on_message = on_message
+	client.connect(Broker, 1883, 60) 	
+
+	#timeSync  
+	while noInterupt == True:
+		#print(timeNextGreenDeadline())
+		client.loop_forever()
