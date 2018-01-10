@@ -40,14 +40,16 @@ ts = 0.0
 
 class connectMQTT(threading.Thread):
 	def __init__(self,Broker):
+		threading.Thread.__init__(self)
 		if Broker == 0:
-			Broker="172.31.12.122"
+			self.Broker="172.31.12.122"
 	
-	self.client = mqtt.Client()
-	self.client.on_connect = on_connect
-	self.client.on_message = on_message
-	self.client.connect(Broker, 1883, 60) 	
-
+		self.client = mqtt.Client()
+		self.client.on_connect = on_connect
+		self.client.on_message = on_message
+		self.client.connect(Broker, 1883, 60) 	
+		self.run()
+		
 	def on_connect(self,client, userdata, flags, rc):
 	print("Connected with result code "+str(rc))
 	self.client.subscribe(timestamp)
