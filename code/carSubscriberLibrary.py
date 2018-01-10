@@ -56,11 +56,13 @@ def writeIO(data, outfile):
 	
 	
 def readIO(filename):
-	ifile = open(filename)
-	data = pickle.load(ifile)
-	ifile.close()
-	return data
-
+	#@TODO if Abfrage falls file schon offen
+	if closed(filename) == True:
+		ifile = open(filename)
+		data = pickle.load(ifile)
+		ifile.close()
+		return data
+	else return "file is opened by another process at the moment"
 def on_message(client, userdata, msg):
 	t0 = time.time()
 
