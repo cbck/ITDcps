@@ -38,22 +38,88 @@ f = "io_file.txt"
 servertime = ''
 ts = 0.0
 
-def on_connect(client, userdata, flags, rc):
-	print("Connected with result code "+str(rc))
-	client.subscribe(timestamp)
-	client.subscribe(iRed)
-	client.subscribe(iRedYellow)
-	client.subscribe(iGreen)
-	client.subscribe(iYellow)
-	client.subscribe(TTNS)
-	client.subscribe(interupt)
-	client.subscribe(CS)
+class connectMQTT(threading.Thread):
+	def __init__(self,Broker):
+		if Broker == 0:
+			Broker="172.31.12.122"
 	
+	self.client = mqtt.Client()
+	self.client.on_connect = on_connect
+	self.client.on_message = on_message
+	self.client.connect(Broker, 1883, 60) 	
+
+	def on_connect(self,client, userdata, flags, rc):
+	print("Connected with result code "+str(rc))
+	self.client.subscribe(timestamp)
+	self.client.subscribe(iRed)
+	self.client.subscribe(iRedYellow)
+	self.client.subscribe(iGreen)
+	self.client.subscribe(iYellow)
+	self.client.subscribe(TTNS)
+	self.client.subscribe(interupt)
+	self.client.subscribe(CS)
+	
+	def on_message(self,client, userdata, msg):
+		t0 = time.time()
+
+		if self.msg.topic == timestamp:
+			servertime = str(msg.payload)
+			print("UTC Servertime:" +servertime)
+		
+		if self.msg.topic == iRed:
+			timeRed = msg.payload
+			print("Red: " + timeRed)
+			floats[0] = timeRed
+			writeIO(floats,f)
+	
+		if self.msg.topic == iRedYellow:
+			timeRedYellow = msg.payload
+			print("RedYellow: " + timeRedYellow)
+			floats[1] = timeRedYellow
+			writeIO(floats,f)
+		
+		if self.msg.topic == iYellow:
+			timeYellow = msg.payload
+			print("Yellow: " + timeYellow)
+			floats[2] = timeYellow
+			writeIO(floats,f)
+
+		if self.msg.topic == iGreen:
+			timeGreen = msg.payload
+			print("Green: " + timeGreen)
+			floats[3] = timeGreen
+			writeIO(floats,f)
+		
+		if self.msg.topic == interupt:
+			serverInterupt = msg.payload
+			print("Serverinterupt " + serverInterupt)
+		
+		if self.msg.topic == TTNS:
+			ttns = msg.payload
+			print("timeTillNextState " + ttns +"[seconds]")
+			floats[4] = ttns
+			writeIO(floats,f)
+		
+		if msg.topic == CS:
+			currentState = msg.payload
+			print("currentState " + currentState)
+			floats[5] = currentState
+			writeIO(floats,f)
+
+	def run(self):
+		while noInterupt == True:
+			#print(timeNextGreenDeadline())
+			self.client.loop_forever()
+
+
+def getPeriodTime():
+	periodtime = timeRed + timeRedYellow + timeGreen + timeYellow
+	return periodtime
+
 def writeIO(data, outfile):
 	ifile = open(outfile, "wb")
 	pickle.dump(data,ifile)
 	ifile.close()
-	
 	
 def readIO(filename):
 	#@TODO if Abfrage falls file schon offen
@@ -63,58 +129,6 @@ def readIO(filename):
 		ifile.close()
 		return data
 	else return "file is opened by another process at the moment"
-def on_message(client, userdata, msg):
-	t0 = time.time()
-
-	if msg.topic == timestamp:
-		servertime = str(msg.payload)
-		print("UTC Servertime:" +servertime)
-		
-	if msg.topic == iRed:
-		timeRed = msg.payload
-		print("Red: " + timeRed)
-		floats[0] = timeRed
-		writeIO(floats,f)
-		
-		
-	if msg.topic == iRedYellow:
-		timeRedYellow = msg.payload
-		print("RedYellow: " + timeRedYellow)
-		floats[1] = timeRedYellow
-		writeIO(floats,f)
-		
-	if msg.topic == iYellow:
-		timeYellow = msg.payload
-		print("Yellow: " + timeYellow)
-		floats[2] = timeYellow
-		writeIO(floats,f)
-
-	if msg.topic == iGreen:
-		timeGreen = msg.payload
-		print("Green: " + timeGreen)
-		floats[3] = timeGreen
-		writeIO(floats,f)
-		
-	if msg.topic == interupt:
-		serverInterupt = msg.payload
-		print("Serverinterupt " + serverInterupt)
-		
-	if msg.topic == TTNS:
-		ttns = msg.payload
-		print("timeTillNextState " + ttns +"[seconds]")
-		floats[4] = ttns
-		writeIO(floats,f)
-		
-	if msg.topic == CS:
-		currentState = msg.payload
-		print("currentState " + currentState)
-		floats[5] = currentState
-		writeIO(floats,f)
-
-
-def getPeriodTime():
-	periodtime = timeRed + timeRedYellow + timeGreen + timeYellow
-	return periodtime
 	
 def timeNextGreenDeadline():
 	if 	currentState == "Green":
@@ -130,14 +144,3 @@ def timeNextGreenDeadline():
 		return ttns
 	else:
 		return "Time till next Green Deadline can not be calculated"
-
-def connectMQTT():
-	client = mqtt.Client()
-	client.on_connect = on_connect
-	client.on_message = on_message
-	client.connect(Broker, 1883, 60) 	
-
-	#timeSync  
-	while noInterupt == True:
-		#print(timeNextGreenDeadline())
-		client.loop_forever()
