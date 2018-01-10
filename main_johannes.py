@@ -25,9 +25,13 @@
 import MbotMQTT.py
 from carSubscriberLibrary.py import
 from carSubscriberLibrary import readIO
+from time import sleep
 workArray = []
 
-#distance = 50.0
+start_distance = 50.0
+start_speed = 155
+max_speed = 255
+min_speed = 55
 
 
 def main():
@@ -35,20 +39,35 @@ def main():
 
 	
 def driveAlgorithm():
-	if(timeNextGreenDeadline) == "error":
+   while Mbot_start() == 1:
+	if timeNextGreenStart == "error":
 		break
+	else
+	        mbot_drive_straight(my_mbot,serial,start_speed,"foreward")
+
+		avarege_speed = (start_speed/(start_distance-near_distance/start_speedsi)+new_speed/(start_distance-near_distance/start_speedsi)
+		distance = avarege_speed*(t_current) 
+		tta = distance/start_speed
+		
+		# wenn die Grünphase erreicht werden kann, dann mbot = Volllast
+		if timeNextGreenStart < tta && workArray[4] > tta:
+		mbot_drive_straight(my_mbot,serial,start_speed,"foreward")
+		
+		#Mbot würde vor oder nach der Grünphase ankommen
+		elif timeNextGreenStart > tta || workarray[4] < tta:
 			
-    elif(timeNextGreenDeadline) == 0:
-		mbot_drive_straight(my_mbot,serial,255,"foreward")
-	
-	elif(timeNextGreenDeadline) < distance/mbot_speed:
-		mbot_motor_stop
-	
-	elif(timeNextGreenDeadline) > distance/mbot_speed:
-		mbot_speed = distance/timeNextGreenDeadline
-		mbot_drive_straight(my_mbot,serial,mbot_speed,"foreward")
-	
-def timeNextGreenDeadline():
+			#Mbot muss an der Ampel stoppen
+			if timeNextGreenStart > distance/min_speed
+				slowdown()
+				if distance >= start_distance:
+					mbot_stop()
+					
+			#Geschwindigkeit wird angepasst, sodass Mbot bei grün ankommt		
+			else
+				new_speed = distance/timeNextGreenStart
+				mbot_drive_straight(my_mbot,serial,new_speed,"foreward")
+
+def timeNextGreenStart():
 	#Function returns a float with time in seconds till the next Green-Phase ends
 	if 	workArray[5] == "Green":
 		return 0 
@@ -71,6 +90,8 @@ def timeNextGreenDeadline():
 		print("--------------------------------------------------Red-Yellow received in main.py")
 	else:
 		return "Time till next Green Deadline can not be calculated"
+def slowdown():
+	for i in range(mbot_speed
 
 
 if __name__ == '__main__':
