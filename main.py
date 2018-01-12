@@ -15,6 +15,7 @@ from carSubscriberLibrary import connectMQTT
 from carSubscriberLibrary import on_message
 from carSubscriberLibrary import driveWithQueue
 from carSubscriberLibrary import testQueue
+from carSubscriberLibrary import getTTNS
 import Queue
 import array
 import pickle
@@ -25,20 +26,27 @@ import threading
 from time import sleep
 Broker="172.31.12.122"
 workArray = []
-bufFloat=[]
 f = "io_file.txt"
 #distance = 50.0
 #workArray contents [Red,RedYellow,Yellow,Green,ttns,currentState]
-
+q = Queue(maxsize =0)
 
 def main():
 
+	print "Main Started here"
+
+	q = queue.LifoQueue()
+	q.put(getTTNS)
+
+	print "*** LIFO Queue created"
+	
 	#os.system('python carSubscriber.py')
 	print "carSubscriber.py should start"
 	mqttConnection = connectMQTT(Broker)
 	mqttConnection.start()
 	
-	print "Main Started here"
+	threading.Thread(target=process_ttns, args=(q,))
+	
 	#q = Queue.Queue()
 	driveWithQueue()
 	testQueue()
@@ -61,6 +69,11 @@ def main():
 	while 1:
 		pass
 	'''
+def process_ttns(q):
+	while True:
+		next_ttns = q.get()
+		print('*** TTNS from q is:', next_ttns.getTTNS)
+		q.task_done()
 
 
 '''

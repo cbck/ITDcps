@@ -25,6 +25,7 @@ timeRed = 0.0
 timeRedYellow = 0.0
 timeGreen = 0.0
 timeYellow = 0.0
+ttns = 0.0
 t0 = 0.0
 floats= 0.,0.,0.,0.,0.,str(currentState)
 f = "io_file.txt"
@@ -58,6 +59,8 @@ class connectMQTT (threading.Thread):
 		while True:
 			#print(timeNextGreenDeadline())
 			self.client.loop_forever()
+	def getTTNS():
+		return ttns
 			
 
 def on_connect(client, userdata, flags, rc):
