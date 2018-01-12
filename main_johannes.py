@@ -22,48 +22,55 @@
 #  
 #  
 
-import MbotMQTT.py
-from carSubscriberLibrary.py import
-from carSubscriberLibrary import readIO
-from time import sleep
-workArray = []
+import MbotMQTT
+#from carSubscriberLibrary import readIO
+import time
+workArray=[ 10.,1.,3.,10.,5.,"Green"]
 
 start_distance = 50.0
 start_speed = 155
+start_speedsi = (0.42/255)*155
 max_speed = 255
 min_speed = 55
+min_speedsi = (0.42/255)*55
+
+current_milli_time = lambda: int(round(time.time() * 1000))
 
 
 def main():
-	print "sind wir hier?"
+	driveAlgorithm()
 
 	
 def driveAlgorithm():
-   while Mbot_start() == 1:
-	if timeNextGreenStart == "error":
-		break
-	else
-	        mbot_drive_straight(my_mbot,serial,start_speed,"foreward")
-				    
-		tta = start_distance/start_speed
+	t0 = current_milli_time()
+   #while Mbot_start() == 1:
+	while 1:
+		if timeNextGreenStart == "error":
+			break
+		else:
+			mbot_drive_straight(my_mbot,serial,start_speed,"foreward")		    
+			tta = start_distance/start_speedsi
 		
-		# wenn die Grünphase erreicht werden kann, dann mbot = Volllast
-		if timeNextGreenStart < tta && workArray[4] > tta:
-		mbot_drive_straight(my_mbot,serial,start_speed,"foreward")
+			# wenn die Grünphase erreicht werden kann, dann behalte Geschwindigkeit
+			if timeNextGreenStart()< tta and workArray[4] > tta:
+				mbot_drive_straight(my_mbot,serial,start_speed,"foreward")
 		
-		#Mbot würde vor oder nach der Grünphase ankommen
-		elif timeNextGreenStart > tta || workarray[4] < tta:
+			#Mbot würde vor oder nach der Grünphase ankommen
+			elif timeNextGreenStart() > tta or workarray[4] < tta:
 			
 			#Mbot muss an der Ampel stoppen
-			if timeNextGreenStart > distance/min_speed
-				slowdown()
-				if distance >= start_distance:
-					mbot_stop()
+				if timeNextGreenStart() > start_distance/min_speed:
+					slowdown()
+					tnow = current_milli_time()
+					distance = ((start_speedsi+min_speedsi)/2)*(tnow-t0)
+					if distance >= start_distance:
+						mbot_motor_stop()
 					
 			#Geschwindigkeit wird angepasst, sodass Mbot bei grün ankommt		
-			else
-				new_speed = distance/timeNextGreenStart
+			else:
+				new_speed = distance/timeNextGreenStart()
 				mbot_drive_straight(my_mbot,serial,new_speed,"foreward")
+		
 
 def timeNextGreenStart():
 	#Function returns a float with time in seconds till the next Green-Phase ends
@@ -89,7 +96,12 @@ def timeNextGreenStart():
 	else:
 		return "Time till next Green Deadline can not be calculated"
 def slowdown():
-	for i in range(mbot_speed
+	for new_speed in range(start_speed,min_speed):
+		mbot_drive_straight(my_mbot,serial,new_speed,"foreward")
+		new_speed= newspeed-1
+		sleep(0.2)
+	 
+	
 
 
 if __name__ == '__main__':
