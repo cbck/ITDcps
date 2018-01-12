@@ -44,10 +44,8 @@ def driveAlgorithm():
 		break
 	else
 	        mbot_drive_straight(my_mbot,serial,start_speed,"foreward")
-
-		avarege_speed = (start_speed/(start_distance-near_distance/start_speedsi)+new_speed/(start_distance-near_distance/start_speedsi)
-		distance = avarege_speed*(t_current) 
-		tta = distance/start_speed
+				    
+		tta = start_distance/start_speed
 		
 		# wenn die Grünphase erreicht werden kann, dann mbot = Volllast
 		if timeNextGreenStart < tta && workArray[4] > tta:
