@@ -12,18 +12,19 @@ from mbot import mbot_motor_stop
 import time
 import serial
 import threading
+import Queue
 from threading import Thread
 
 serial = serial.Serial("/dev/ttyAMA0", baudrate=115200, timeout=3.0)
 
-workArray=[ 10.,1.,3.,10.,5.,"Green"]
+workArray=[ 10.,1.,3.,10.,2.,"Green"]
 
-start_distance = 50.0			#Welche einheit @Johannes @Rojda @Melissa?
-start_speed = 155				#Integer for motor value 0...255
-start_speedsi = (0.42/255)*155
-max_speed = 255
-min_speed = 55
-min_speedsi = (0.42/255)*55
+start_distance = 5.0			#Dummwert in Meter
+start_speed = 255				#Integer for motor value 0...255
+start_speedsi = (0.42/255)*start_speed	#in meter/seconds
+max_speed = 255					#int
+min_speed = 55					#int
+min_speedsi = (0.42/255)*min_speed
 noInterupt = True
 
 #Broker is running via a dedicated windows pc 
@@ -49,7 +50,7 @@ timeGreen = 0.0
 timeYellow = 0.0
 m_start_signal = 1
 
-current_milli_time = lambda: int(round(time.time() * 1000))
+current_milli_time = lambda: int(round(time.time() * 1000))		#these so-called lambda functions can be used anywhere a function is required.
 	
 def on_connect(client, userdata, flags, rc):
 		print("Connected with result code "+str(rc))
@@ -124,7 +125,7 @@ class testThread(threading.Thread):
 		threading.Thread.__init__(self)
 		print("Ahoi")
 '''			
-class connectMQTT(threading.Thread):
+class connectMQTT(threading.Thread,):
 	def __init__(self,Broker):
 		threading.Thread.__init__(self)
 		
@@ -141,13 +142,18 @@ class connectMQTT(threading.Thread):
 		while noInterupt == True:
 		#print(timeNextGreenDeadline())
 			self.client.loop_start()
-			time.sleep(0.1)
+			#time.sleep(0.1)
 			print str(workArray)
+			q.put(workArray[4])
+			q.task_done
 			self.client.loop_stop()
 
-def driveAlgorithm():
+def driveAlgorithm(q):
 	t0 = current_milli_time()
+	print "I jumped into driveAlgorith()"
 	#while Mbot_start() == 1:
+	workArray [4] = q.get()
+	q.task_done
 	try:
 		print "Mbot started!"
 		if timeNextGreenStart() == "error":
@@ -174,6 +180,7 @@ def driveAlgorithm():
 					if distance >= start_distance:
 						print "Halt stop, jetzt bremst der mBot"
 						mbot_motor_stop()
+						print "Funktioniert das hier?"
 					
 			#Geschwindigkeit wird angepasst, sodass Mbot bei gruen ankommt		
 			else:
@@ -205,7 +212,8 @@ def timeNextGreenStart():
 		return workArray[4]
 		print("--------------------------------------------------Red-Yellow received in main.py")
 	else:
-		return "Time till next Green Deadline can not be calculated"
+		return "error"
+		print "Time till next Green Deadline can not be calculated"
 		
 def slowdown():
 	for new_speed in range(start_speed,min_speed):
@@ -214,15 +222,22 @@ def slowdown():
 		sleep(0.2)
 
 def main():
+	print "Main Started here"
+	q = Queue.LifoQueue()
+	print "*** LIFO Queue created"
+	
 	try:
 		print "MQTT should start here"
-		mqttConnection = connectMQTT(Broker)
+		mqttConnection = connectMQTT(Broker,q)
 		mqttConnection.start()
+		
+		q.join()  
+		
 		print "Driver should start here"
-		#driveThread = Thread(target = driveAlgorithm, args=())
-		#driveThread.setDaemon(True)
-		#driveThread.start()
-		thread.start_new_thread( driveAlgorithm, ())
+		driveThread = Thread(target = driveAlgorithm, args=(q,))
+		driveThread.setDaemon(True)
+		driveThread.start()
+		
 	except Exception:
 		Exception.message
 	
