@@ -30,6 +30,25 @@ noInterupt = True
 Broker="172.31.12.122"			
 topic_pub="traffiLight/carMessage"
 
+#Global variables for MQTT Transfer
+global timeRed 
+global timeRedYellow 
+global timeGreen
+global timeYellow 
+global m_start_signal
+global workArray
+global state
+global TTNS
+global timestamp 
+global iRed 
+global iRedYellow 
+global iGreen 
+global iYellow       
+global interupt 
+global CS 
+global startTopic 
+global currentState
+
 #Subscribe Topics all starting with traffiLight/ for
 state = "traffiLight/state"             #dummy topic
 TTNS = "traffiLight/timeTillNextState"  #refreshed subtopic showing time till change in seconds
@@ -42,13 +61,14 @@ interupt = "traffiLight/interupt"       #interupt if Bus/RTW comes and other
 CS = "traffiLight/currentState"			#current state as string, can be "Green","Red","Red-Yellow" and "Yellow"
 startTopic = "traffiLight/start"		#topic to read start signal from for starting mBot from distance
 currentState = ""						#can be "Green","Red","Red-Yellow" and "Yellow"
-global timeRed = 0.0
-global timeRedYellow = 0.0
-global timeGreen = 0.0
-global timeYellow = 0.0
-global m_start_signal = 1
-global workArray=[ 10.,1.,3.,10.,2.,"Green"]
-global LifoQueue =q
+
+timeRed = 0.0
+timeRedYellow = 0.0
+timeGreen = 0.0
+timeYellow = 0.0
+m_start_signal = 1
+workArray=[ 10.,1.,3.,10.,2.,"Green"]
+
 
 current_milli_time = lambda: int(round(time.time() * 1000))		#these so-called lambda functions can be used anywhere a function is required.
 	
