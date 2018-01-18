@@ -26,6 +26,10 @@ global CS
 global startTopic 
 global currentState
 
+# Set up the global Serial communication 
+global serial
+serial = serial.Serial("/dev/ttyAMA0", baudrate=115200, timeout=3.0)
+
 # Subscribe Topics all starting with traffiLight/ for
 state = "traffiLight/state"             # dummy topic
 TTNS = "traffiLight/timeTillNextState"  # refreshed subtopic showing time till change in seconds
@@ -173,11 +177,17 @@ class Drive_Algorithm:                  # Beginning of the Drive_Algorithm
     def run(self):                      # beginning of the "Main Loop" From these Thread
         global mqtt_return_value        # declare the global var for the class
         global workArray
+        global serial
+        
         while self._running:            # Start While Loop 
+			#Here should the driveAlgorithm be
+			
 			print workArray
 			if (workArray[5] == "Green"):
-			
 				print("Vollgas")
+				mbot_drive_straight(serial, 255, "forward")
+			else:
+				mbot_motor_stop(serial)
 
             
 
