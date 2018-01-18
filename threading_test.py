@@ -54,7 +54,7 @@ global mqtt_return_value                # This is a variable to return the mqtt 
 mqtt_return_value = 0                   # for testing reasons the default is 0
 
 global mqtt_return_start                # This is a variable to start the Drive Algorithm
-mqtt_return_start = 0                   # Default of these var is 0 for Not Starting; 1 = Start Drive Algorithm
+mqtt_return_start = 1	                # Default of these var is 0 for Not Starting; 1 = Start Drive Algorithm
 
 global Broker                           # Broker is running via a dedicated windows pc... The MQTT.fx ,Broker is used on Windows(@Johannes?)
 Broker = "172.31.12.122"                # Broker IP Adress
@@ -73,14 +73,14 @@ class Get_MQTT:                         # Begining of the Get_MQTT Class
             self.Broker="172.31.12.122"
         
         self.client = mqtt.Client()
-        self.client.on_connect = on_connect
-        self.client.on_message = on_message
+        self.client.on_connect = self.on_connect
+        self.client.on_message = self.on_message
         self.client.connect(Broker, 1883, 60)
 
     def terminate(self):                # Terminator of the Get_MQTT Class
         self._running = False 
 
-    def on_connect(client, userdata, flags, rc):
+    def on_connect(self,client, userdata, flags, rc):
         print("Connected with result code "+str(rc))
         #self.client.subscribe(timestamp)
         client.subscribe(iRed)
@@ -92,7 +92,7 @@ class Get_MQTT:                         # Begining of the Get_MQTT Class
         client.subscribe(CS)
         client.subscribe(startTopic)
         
-    def on_message(client, userdata, msg):
+    def on_message(self,client, userdata, msg):
         '''
         if self.msg.topic == timestamp:
                 servertime = str(msg.payload)
@@ -141,16 +141,12 @@ class Get_MQTT:                         # Begining of the Get_MQTT Class
     def run(self):                      # beginning of the "MAIN LOOP" from these Thread 
         global mqtt_return_value        # declare the global var for the Class
         global mqtt_return_start        # declare the global Start Var for the Class
-
+        
         while self._running:            # Start While Loop
 
             self.client.loop_start()    
-            
 
-            print str(workArray)        # Prints out the recived Messages
-                        
-            
-
+            #print str(workArray)        # Prints out the recived Messages            
 
             self.client.loop_stop()
             """
@@ -167,18 +163,6 @@ class Get_MQTT:                         # Begining of the Get_MQTT Class
                 mqtt_return_start = 1
             """
 
-
-
-            ##########     TEST
-            time.sleep(0.1) #One second delay
-            mqtt_return_value = mqtt_return_value+1
-            print "MQTT Thread"
-            ##########     END TEST
-
-
-
-
-
 class Drive_Algorithm:                  # Beginning of the Drive_Algorithm
     def __init__(self):
         self._running = True
@@ -188,18 +172,15 @@ class Drive_Algorithm:                  # Beginning of the Drive_Algorithm
 
     def run(self):                      # beginning of the "Main Loop" From these Thread
         global mqtt_return_value        # declare the global var for the class
+        global workArray
         while self._running:            # Start While Loop 
+			print workArray
+			if (workArray[5] == "Green"):
+			
+				print("Vollgas")
 
-            """
-                In the following while loop is some space for the drive algorithm
-
-                Mbot befehle
-            """
             
-            ##############     TEST
-            time.sleep(0.1)#One second delay
-            print mqtt_return_value
-            ##############     END TEST
+
 
 
 
@@ -251,7 +232,7 @@ while Exit==False:                      # while Exit flag == False => Do the Loo
     #print mqtt_return_value
 
     cycle = cycle + 0.1 
-    #print cycle
+    print cycle
     if (cycle > 5): Exit = True #Exit Program
 
     ############### END of Test
