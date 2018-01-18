@@ -17,8 +17,6 @@ from threading import Thread
 
 serial = serial.Serial("/dev/ttyAMA0", baudrate=115200, timeout=3.0)
 
-workArray=[ 10.,1.,3.,10.,2.,"Green"]
-
 start_distance = 5.0			#Dummwert in Meter
 start_speed = 255				#Integer for motor value 0...255
 start_speedsi = (0.42/255)*start_speed	#in meter/seconds
@@ -44,11 +42,13 @@ interupt = "traffiLight/interupt"       #interupt if Bus/RTW comes and other
 CS = "traffiLight/currentState"			#current state as string, can be "Green","Red","Red-Yellow" and "Yellow"
 startTopic = "traffiLight/start"		#topic to read start signal from for starting mBot from distance
 currentState = ""						#can be "Green","Red","Red-Yellow" and "Yellow"
-timeRed = 0.0
-timeRedYellow = 0.0
-timeGreen = 0.0
-timeYellow = 0.0
-m_start_signal = 1
+global timeRed = 0.0
+global timeRedYellow = 0.0
+global timeGreen = 0.0
+global timeYellow = 0.0
+global m_start_signal = 1
+global workArray=[ 10.,1.,3.,10.,2.,"Green"]
+global LifoQueue =q
 
 current_milli_time = lambda: int(round(time.time() * 1000))		#these so-called lambda functions can be used anywhere a function is required.
 	
