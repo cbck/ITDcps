@@ -136,36 +136,17 @@ class Get_MQTT:                         # Begining of the Get_MQTT Class
         if msg.topic == startTopic:
             m_start_signal = msg.payload
 
-
-
-
-
-
-
     def run(self):                      # beginning of the "MAIN LOOP" from these Thread 
         global mqtt_return_value        # declare the global var for the Class
         global mqtt_return_start        # declare the global Start Var for the Class
         
         while self._running:            # Start While Loop
 
-            self.client.loop_start()    
+            self.client.loop_start()    # handles incoming mqtt messages to the subscribed topics in __init__()
+            #print str(workArray)       # Prints out the recived Messages            
+            self.client.loop_stop()     # stop MQTT
 
-            #print str(workArray)        # Prints out the recived Messages            
 
-            self.client.loop_stop()
-            """
-                In the following we have to implement our MQTT SUPscriber BLA BLA 
-                Our return value is a global var called "mqtt_return_value"
-                The Value of this Var is available in our main and also in other threds if the global var is declared in the class 
-            """
-
-            
-
-            #If the Start topic is subscribed with 1 
-            """
-            if Mqtt.start == 1 
-                mqtt_return_start = 1
-            """
 
 class Drive_Algorithm:                  # Beginning of the Drive_Algorithm
     def __init__(self):
@@ -176,26 +157,20 @@ class Drive_Algorithm:                  # Beginning of the Drive_Algorithm
 
     def run(self):                      # beginning of the "Main Loop" From these Thread
         global mqtt_return_value        # declare the global var for the class
-        global workArray
-        global serial
+        global workArray                # hand over workArray to drive Algorithm
+        global serial                   # hand over the serial port to driveAlgorithm
         
         while self._running:            # Start While Loop 
-			#Here should the driveAlgorithm be
+			#@JOHANNESE Here should the driveAlgorithm be
 			
 			print workArray
-			if (workArray[5] == "Green"):
+			if (workArray[5] == "Green"):       #easy peasy test if-question
 				print("Vollgas")
 				mbot_drive_straight(serial, 255, "forward")
 			else:
-				mbot_motor_stop(serial)
+				mbot_motor_stop(serial)         #every other state than green --> stop
 
             
-
-
-
-
-
-
 #Create Class Get_MQTT
 Get_MQTT = Get_MQTT()
 #Create Thread Get_MQTT_Thread
@@ -207,46 +182,37 @@ Get_MQTT_Thread.start()
 Drive_Algorithm = Drive_Algorithm()
 #Create Thread Drive_Algortihm_Thread
 Drive_Algorithm_Thread = Thread(target=Drive_Algorithm.run) 
+#Start Thread is later connected to the MQTT-start signal
 """
 #Start Thread Drive_Algortihm_Thread
 Drive_Algorithm_Thread.start()          #The Drive Algorithm should be starded later in the Code, when the Main gets the Start Value
 """
 
-
-
 Exit = False                            # Exit flag for Breaking up with the main Loop 
 while Exit==False:                      # while Exit flag == False => Do the Loop... A Possible Exit Situation is when the Mbot reaches its goal
     #Starting the Main Loop of the whole Programm 
 
-    """
-        This is the Main Loop...
-        This is where the magic happened
-    """
-
     #The Get_MQTT Thread is already starded if there is there is the Start Topic, Start the Drive Algorithm
+    #ATTENTION: IF NEVER STOPS, because mqtt_return_start is example variable
     if (mqtt_return_start == 1):
         """
             Now the Mbot starts
         """
         #Start Thread Drive_Algortihm_Thread
-        Drive_Algorithm_Thread.start()          
+        Drive_Algorithm_Thread.start()      #start when MQTT-start signal is 1       
 
-
-    
+'''
     ############### Some Test Code 
-
     print "Hier meldet sich die Main zu wort"
     time.sleep(0.1) #One second delay
-
     #Test if the returnvalue of the mqtt thread is valid 
     #print mqtt_return_value
 
     cycle = cycle + 0.1 
     print cycle
     if (cycle > 5): Exit = True #Exit Program
-
     ############### END of Test
-
+'''
 Drive_Algorithm.terminate()
 Get_MQTT.terminate()
 print "Goodbye :)"
