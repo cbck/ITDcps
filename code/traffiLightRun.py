@@ -157,7 +157,7 @@ while noInterupt == True:
 	for idx in range(0,n):
 		ttns = ttns-0.1
 		yellow_LED.on()
-		print("Green for %f") %ttns
+		print("Yellow for %f") %ttns
 		client.publish(TTNS,ttns)
 		sleep(0.1)
 		idx = idx-1
