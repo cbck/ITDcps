@@ -160,6 +160,83 @@ class Get_MQTT:                         # Begining of the Get_MQTT Class
                 mqtt_return_start = 1
             """
 
+
+
+class Drive_Algorithm:
+
+	#This functions tooks an Integer Value between 0 and 255 and returns a Speed Value in M/S
+	def int2speed(int_speed, max_power_speed):
+		#Calculate the M/S rate for each step between 0 and 255
+		 units_per_val = max_power_speed/255
+		 #Calculate the actual Speed 
+		 speed =  units_per_val * int_speed
+		 return speed
+
+	#This function tooks an Speed Value in M/s and generates a Integer Value between 0 and 255
+	def speed2int(speed, max_power_speed):
+		#Calculate the M/S rate for each Step between 0 and 255 
+		units_per_val = max_power_speed/255
+		#calculate the Integer Value for the Mbot
+		int_speed = speed / units_per_val
+		return int(int_speed)
+
+	#This function checks if it is possible to reach the next Green light with max Speed and 
+	#gives back the earliest time the mbot could reach the trafficlight
+	def calc_reachable_green_phase(speed, distance, time_to_next_green_start, time_green_interval):
+		#first of all calculate the time to reach with the setted Speed to arrive at the trafficlight
+
+		#init a Var for saving our new time
+		time_to_earliest_green_start = 0
+
+		#while forever
+		while (1):
+
+			# Break Condition : If the time to reach the next green Phase < time to earliest green_start break the Loop		
+			if (distance/speed <= time_to_earliest_green_start):
+				break
+
+			#otherwise add the intervaltime for the next greenphase to the Variable
+			time_to_earliest_green_start = time_to_earliest_green_start + time_green_interval
+			
+		return time_to_earliest_green_start
+		
+	#This Function tooks the initial start speed, the time to decide,  and the distance
+	def calc_rest_distance(start_speed, distance,t_decide):
+
+		#at first calc the distance the Mbot has driven after he reaches t_decide 
+		distance_before_decision = start_speed * t_decide
+
+		#Than calculate the distance from t_decide to the trafficlight
+		rest_distance = distance - distance_before_decision
+		return rest_distance
+
+	#This Funktion is the real Drive Agorithm
+	def calc_new_speed(rest_distance, rest_time, time_offset):
+
+		#add the offset to the rest time 
+		rest_time = rest_time + time_offset
+
+		#calc the new speed
+		new_speed = rest_distance / rest_time
+		return new_speed
+
+
+	"""
+		Now prepare the Variables we needed for the Calculation
+	"""
+	#time to next greed start give us the time till the next green phase beginns. 
+	#This Var is a Timer with an intervall of 10+1+3+10+2 = 26Sek.
+	time_to_next_green_start = 26.0 
+	print self.timeNextGreenStart
+	
+
+
+
+
+
+
+
+"""
 class Drive_Algorithm:  
 	start_distance = 2
 	#startdistance in m
@@ -176,12 +253,12 @@ class Drive_Algorithm:
 
 	def terminate(self):                # Terminator for the Drive_Algortihm_Thread
 		self._running = False
-	"""  
+	  
 		def calcSpeed(newSpeed):				# new Speed in Mbot values,  
 			maxSpeed = 0.42						# maximum Speed in [m/s]
 			newMbotSpeed = (newSpeed/maxSpeed)*255	#newMbotSpeed = Value betweeen 0-255; 
 			return newMbotSpeed  
-	"""
+
 	def run(self):                      # beginning of the "Main Loop" From these Thread
 		global mqtt_return_value        # declare the global var for the class
 		global workArray
@@ -309,6 +386,12 @@ class Drive_Algorithm:
 			new_speed= new_speed-3
 			sleep(0.2)
 			
+"""
+
+
+
+
+
 
 
 #Create Class Get_MQTT
@@ -352,17 +435,13 @@ while Exit==False:                      # while Exit flag == False => Do the Loo
 
     """
     ############### Some Test Code 
-
     print "Hier meldet sich die Main zu wort"
     time.sleep(0.1) #One second delay
-
     #Test if the returnvalue of the mqtt thread is valid 
     #print mqtt_return_value
-
     cycle = cycle + 0.1 
     print cycle
     if (cycle > 5): Exit = True #Exit Program
-
     ############### END of Test
     """
 
