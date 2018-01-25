@@ -246,10 +246,10 @@ class Drive_Algorithm:
 		return rest_distance
 
 	#This Funktion is the real Drive Agorithm
-	def calc_new_speed(self, rest_distance, rest_time, time_offset):
+	def calc_new_speed(self, rest_distance, rest_time):
 
 		#add the offset to the rest time 
-		rest_time = rest_time + time_offset
+		rest_time = rest_time
 
 		#calc the new speed
 		new_speed = rest_distance / rest_time
@@ -294,7 +294,7 @@ class Drive_Algorithm:
 			distance_start_trafficlight = 5
 
 			#time Offset to reach the trafficlight a little bit after switching
-			time_offset = 0
+			time_offset = 0.5
 
 			#Calc the first reachable green phase
 			earliest_green_phase = self.calc_reachable_green_phase(max_power_speed, distance_start_trafficlight, time_to_next_green_start, time_green_interval)
@@ -303,10 +303,10 @@ class Drive_Algorithm:
 			rest_distance = self.calc_rest_distance(max_power_speed, distance_start_trafficlight, time_decide)
 			
 			#calc the time from t_desicion to time earliest green phase 
-			rest_time = earliest_green_phase - time_decide
+			rest_time = earliest_green_phase - time_decide + time_offset
 			
 			#now calc the new Speed after time decision 
-			new_speed = self.calc_new_speed(rest_distance, rest_time, time_offset)
+			new_speed = self.calc_new_speed(rest_distance, rest_time)
 			
 			#now transfer the M/S value in an Mbot Vlaue
 			new_mbot_speed = self.speed2int(new_speed, max_power_speed)
